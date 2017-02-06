@@ -149,6 +149,8 @@ public class MapView extends FrameLayout {
 
         // Create native Map object
         nativeMapView = new NativeMapView(MapView.this);
+        nativeMapView.setAccessToken(Mapbox.getAccessToken());
+        nativeMapView.setReachability(isConnected());
 
         //Continue configuring the map view on the main thread
         MapView.this.post(new Runnable() {
@@ -170,6 +172,9 @@ public class MapView extends FrameLayout {
       @Override
       public void onDrawFrame(GL10 gl) {
         Timber.i("[%s] onDrawFrame", Thread.currentThread().getName());
+        if (mapboxMap != null) {
+          mapboxMap.syncState();
+        }
         nativeMapView.render();
       }
     });
@@ -233,9 +238,6 @@ public class MapView extends FrameLayout {
     myLocationView.setMapboxMap(mapboxMap);
     attrView.setOnClickListener(new AttributionOnClickListener(getContext(), transform));
 
-    // notify Map object about current connectivity state
-    nativeMapView.setReachability(isConnected());
-
     // initialise MapboxMap
     mapboxMap.initialise(getContext(), mapboxMapOptions);
 
@@ -260,14 +262,11 @@ public class MapView extends FrameLayout {
    */
   @UiThread
   public void onCreate(@Nullable Bundle savedInstanceState) {
-    //nativeMapView.setAccessToken(Mapbox.getAccessToken());
-
     if (savedInstanceState == null) {
       MapboxEvent.trackMapLoadEvent();
     } else if (savedInstanceState.getBoolean(MapboxConstants.STATE_HAS_SAVED_STATE)) {
       mapboxMap.onRestoreInstanceState(savedInstanceState);
     }
-
   }
 
   /**
@@ -417,7 +416,12 @@ public class MapView extends FrameLayout {
    */
   @UiThread
   public void onLowMemory() {
-    nativeMapView.onLowMemory();
+    glSurfaceView.queueEvent(new Runnable() {
+      @Override
+      public void run() {
+        nativeMapView.onLowMemory();
+      }
+    });
   }
 
   // Called when debug mode is enabled to update a FPS counter

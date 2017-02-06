@@ -11,12 +11,12 @@ import android.support.annotation.FloatRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.support.annotation.WorkerThread;
 import android.support.v4.util.Pools;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.Annotation;
 import com.mapbox.mapboxsdk.annotations.BaseMarkerOptions;
 import com.mapbox.mapboxsdk.annotations.BaseMarkerViewOptions;
@@ -60,6 +60,7 @@ import timber.log.Timber;
 public final class MapboxMap {
 
   private final NativeMapView nativeMapView;
+  private final MapState mapState = new MapState();
 
   private final UiSettings uiSettings;
   private final TrackingSettings trackingSettings;
@@ -112,10 +113,9 @@ public final class MapboxMap {
 
   void onSaveInstanceState(Bundle outState) {
     outState.putParcelable(MapboxConstants.STATE_CAMERA_POSITION, transform.getCameraPosition());
-    outState.putBoolean(MapboxConstants.STATE_DEBUG_ACTIVE, nativeMapView.getDebug());
-    outState.putString(MapboxConstants.STATE_STYLE_URL, nativeMapView.getStyleUrl());
     trackingSettings.onSaveInstanceState(outState);
     uiSettings.onSaveInstanceState(outState);
+    mapState.onSaveInstanceState(outState);
   }
 
   void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -124,14 +124,9 @@ public final class MapboxMap {
       moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder(cameraPosition).build()));
     }
 
+    mapState.onRestoreInstanceState(savedInstanceState);
     uiSettings.onRestoreInstanceState(savedInstanceState);
     trackingSettings.onRestoreInstanceState(savedInstanceState);
-    nativeMapView.setDebug(savedInstanceState.getBoolean(MapboxConstants.STATE_DEBUG_ACTIVE));
-
-    final String styleUrl = savedInstanceState.getString(MapboxConstants.STATE_STYLE_URL);
-    if (!TextUtils.isEmpty(styleUrl)) {
-      nativeMapView.setStyleUrl(savedInstanceState.getString(MapboxConstants.STATE_STYLE_URL));
-    }
   }
 
   /**
@@ -749,7 +744,7 @@ public final class MapboxMap {
    */
   @UiThread
   public boolean isDebugActive() {
-    return nativeMapView.getDebug();
+    return mapState.getDebug();
   }
 
   /**
@@ -762,7 +757,7 @@ public final class MapboxMap {
    */
   @UiThread
   public void setDebugActive(boolean debugActive) {
-    nativeMapView.setDebug(debugActive);
+    mapState.setDebug(debugActive);
   }
 
   /**
@@ -776,7 +771,7 @@ public final class MapboxMap {
    */
   @UiThread
   public void cycleDebugOptions() {
-    nativeMapView.cycleDebugOptions();
+    mapState.cycleDebugOptions();
   }
 
   //
@@ -786,7 +781,7 @@ public final class MapboxMap {
   private void setApiBaseUrl(@NonNull MapboxMapOptions options) {
     String apiBaseUrl = options.getApiBaseUrl();
     if (!TextUtils.isEmpty(apiBaseUrl)) {
-      nativeMapView.setApiBaseUrl(apiBaseUrl);
+      mapState.setApiBaseUrl(apiBaseUrl);
     }
   }
 
@@ -825,7 +820,7 @@ public final class MapboxMap {
    */
   @UiThread
   public void setStyleUrl(@NonNull String url) {
-    nativeMapView.setStyleUrl(url);
+    mapState.setStyleUrl(url);
   }
 
   /**
@@ -854,13 +849,10 @@ public final class MapboxMap {
    *
    * @param options the object containing the style url
    */
+  @UiThread
   private void setStyleUrl(@NonNull MapboxMapOptions options) {
     String style = options.getStyle();
     if (!TextUtils.isEmpty(style)) {
-      // stopgap for https://github.com/mapbox/mapbox-gl-native/issues/6242
-      if (TextUtils.isEmpty(nativeMapView.getAccessToken())) {
-        nativeMapView.setAccessToken(Mapbox.getAccessToken());
-      }
       setStyleUrl(style);
     }
   }
@@ -876,7 +868,7 @@ public final class MapboxMap {
   @UiThread
   @NonNull
   public String getStyleUrl() {
-    return nativeMapView.getStyleUrl();
+    return mapState.getStyleUrl();
   }
 
   //
@@ -1592,8 +1584,7 @@ public final class MapboxMap {
    */
   @UiThread
   @NonNull
-  public List<Feature> queryRenderedFeatures(@NonNull PointF coordinates, @Nullable String...
-    layerIds) {
+  public List<Feature> queryRenderedFeatures(@NonNull PointF coordinates, @Nullable String... layerIds) {
     return nativeMapView.queryRenderedFeatures(coordinates, layerIds);
   }
 
@@ -1609,6 +1600,14 @@ public final class MapboxMap {
   public List<Feature> queryRenderedFeatures(@NonNull RectF coordinates, @Nullable String...
     layerIds) {
     return nativeMapView.queryRenderedFeatures(coordinates, layerIds);
+  }
+
+  /**
+   * Synchronise user set state with
+   */
+  @WorkerThread
+  void syncState() {
+    mapState.syncState(nativeMapView);
   }
 
   //
