@@ -284,13 +284,13 @@ global.propertyDoc = function (propertyName, property, layerType, kind) {
     if (property["property-function"]) {
         doc += '`\n\nThis property can be set to an `MGLStyleConstantValue`, an `MGLCameraStyleFunction` using an `MGLInterpolationModeExponential` or `MGLInterpolationModeInterval` ' +
                'interpolation mode, an `MGLSourceStyleFunction` using an `MGLInterpolationModeExponential`, `MGLInterpolationModeInterval`, `MGLInterpolationModeCategorical, or `MGLInterpolationModeIdentity` ' + 
-               'interpolation mode, or an `MGLCompositeStyleFunction` using an `MGLInterpolationModeExponential`, `MGLInterpolationModeInterval` or `MGLInterpolationModeCategorical` interpolation mode`';
+               'interpolation mode, or an `MGLCompositeStyleFunction` using an `MGLInterpolationModeExponential`, `MGLInterpolationModeInterval` or `MGLInterpolationModeCategorical` interpolation mode`.';
     } else {
-        if (property.function == "interpolated") {
+        if (property.function === "interpolated") {
         doc += '`\n\nThis property can be set to an `MGLStyleConstantValue` or an `MGLCameraStyleFunction` using an `MGLInterpolationModeExponential` or `MGLInterpolationModeInterval` ' +
-               'interpolation mode';
+               'interpolation mode.';
         } else {
-        doc += '`\n\nThis property can be set to an `MGLStyleConstantValue` or an `MGLCameraStyleFunction` using an `MGLInterpolationModeInterval` interpolation mode';
+            doc += '`\n\nThis property can be set to an `MGLStyleConstantValue` or an `MGLCameraStyleFunction` using an `MGLInterpolationModeInterval` interpolation mode.';
         }
     }
     return doc;
