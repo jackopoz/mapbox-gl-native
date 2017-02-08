@@ -39,9 +39,11 @@ MGL_EXPORT
  This property is only applied to the style if `backgroundPattern` is set to
  `nil`. Otherwise, it is ignored.`
  
- This property can be set to an `MGLStyleConstantValue` or an
- `MGLCameraStyleFunction` using an `MGLInterpolationModeExponential` or
- `MGLInterpolationModeInterval` interpolation mode
+ This property can be set to one of the following values:
+ 
+ - `MGLStyleConstantValue`
+ - `MGLCameraStyleFunction` with an interpolation mode of
+ `MGLInterpolationModeExponential` or `MGLInterpolationModeInterval`
  */
 @property (nonatomic, null_resettable) MGLStyleValue<UIColor *> *backgroundColor;
 #else
@@ -55,9 +57,11 @@ MGL_EXPORT
  This property is only applied to the style if `backgroundPattern` is set to
  `nil`. Otherwise, it is ignored.`
  
- This property can be set to an `MGLStyleConstantValue` or an
- `MGLCameraStyleFunction` using an `MGLInterpolationModeExponential` or
- `MGLInterpolationModeInterval` interpolation mode
+ This property can be set to one of the following values:
+ 
+ - `MGLStyleConstantValue`
+ - `MGLCameraStyleFunction` with an interpolation mode of
+ `MGLInterpolationModeExponential` or `MGLInterpolationModeInterval`
  */
 @property (nonatomic, null_resettable) MGLStyleValue<NSColor *> *backgroundColor;
 #endif
@@ -69,9 +73,11 @@ MGL_EXPORT
  `NSNumber` object containing the float `1`. Set this property to `nil` to reset
  it to the default value.`
  
- This property can be set to an `MGLStyleConstantValue` or an
- `MGLCameraStyleFunction` using an `MGLInterpolationModeExponential` or
- `MGLInterpolationModeInterval` interpolation mode
+ This property can be set to one of the following values:
+ 
+ - `MGLStyleConstantValue`
+ - `MGLCameraStyleFunction` with an interpolation mode of
+ `MGLInterpolationModeExponential` or `MGLInterpolationModeInterval`
  */
 @property (nonatomic, null_resettable) MGLStyleValue<NSNumber *> *backgroundOpacity;
 
@@ -80,9 +86,11 @@ MGL_EXPORT
  seamless patterns, image width and height must be a factor of two (2, 4, 8,
  ..., 512).`
  
- This property can be set to an `MGLStyleConstantValue` or an
- `MGLCameraStyleFunction` using an `MGLInterpolationModeInterval` interpolation
- mode
+ This property can be set to one of the following values:
+ 
+ - `MGLStyleConstantValue`
+ - `MGLCameraStyleFunction` with an interpolation mode of
+ `MGLInterpolationModeInterval`
  */
 @property (nonatomic, null_resettable) MGLStyleValue<NSString *> *backgroundPattern;
 

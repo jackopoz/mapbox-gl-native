@@ -10,9 +10,11 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  Controls the translation reference point.`
  
- This property can be set to an `MGLStyleConstantValue` or an
- `MGLCameraStyleFunction` using an `MGLInterpolationModeInterval` interpolation
- mode
+ This property can be set to one of the following values:
+ 
+ - `MGLStyleConstantValue`
+ - `MGLCameraStyleFunction` with an interpolation mode of
+ `MGLInterpolationModeInterval`
 
  Values of this type are used in the `MGLFillStyleLayer.fillTranslationAnchor`
  property.
@@ -21,17 +23,21 @@ typedef NS_ENUM(NSUInteger, MGLFillTranslationAnchor) {
     /**
      The fill is translated relative to the map.`
      
-     This property can be set to an `MGLStyleConstantValue` or an
-     `MGLCameraStyleFunction` using an `MGLInterpolationModeInterval`
-     interpolation mode
+     This property can be set to one of the following values:
+     
+     - `MGLStyleConstantValue`
+     - `MGLCameraStyleFunction` with an interpolation mode of
+     `MGLInterpolationModeInterval`
      */
     MGLFillTranslationAnchorMap,
     /**
      The fill is translated relative to the viewport.`
      
-     This property can be set to an `MGLStyleConstantValue` or an
-     `MGLCameraStyleFunction` using an `MGLInterpolationModeInterval`
-     interpolation mode
+     This property can be set to one of the following values:
+     
+     - `MGLStyleConstantValue`
+     - `MGLCameraStyleFunction` with an interpolation mode of
+     `MGLInterpolationModeInterval`
      */
     MGLFillTranslationAnchorViewport,
 };
@@ -77,9 +83,11 @@ MGL_EXPORT
  href="https://www.mapbox.com/mapbox-gl-style-spec/#paint-fill-antialias"><code>fill-antialias</code></a>
  layout property in the Mapbox Style Specification.`
  
- This property can be set to an `MGLStyleConstantValue` or an
- `MGLCameraStyleFunction` using an `MGLInterpolationModeInterval` interpolation
- mode
+ This property can be set to one of the following values:
+ 
+ - `MGLStyleConstantValue`
+ - `MGLCameraStyleFunction` with an interpolation mode of
+ `MGLInterpolationModeInterval`
  */
 @property (nonatomic, null_resettable, getter=isFillAntialiased) MGLStyleValue<NSNumber *> *fillAntialiased;
 
@@ -96,14 +104,17 @@ MGL_EXPORT
  This property is only applied to the style if `fillPattern` is set to `nil`.
  Otherwise, it is ignored.`
  
- This property can be set to an `MGLStyleConstantValue`, an
- `MGLCameraStyleFunction` using an `MGLInterpolationModeExponential` or
- `MGLInterpolationModeInterval` interpolation mode, an `MGLSourceStyleFunction`
- using an `MGLInterpolationModeExponential`, `MGLInterpolationModeInterval`,
- `MGLInterpolationModeCategorical, or `MGLInterpolationModeIdentity`
- interpolation mode, or an `MGLCompositeStyleFunction` using an
+ This property can be set to one of the following values:
+ 
+ - `MGLStyleConstantValue`
+ - `MGLCameraStyleFunction` with an interpolation mode of
+ `MGLInterpolationModeExponential` or `MGLInterpolationModeInterval`
+ - `MGLSourceStyleFunction` with an interpolation mode of
+ `MGLInterpolationModeExponential`, `MGLInterpolationModeInterval`,
+ `MGLInterpolationModeCategorical`, or `MGLInterpolationModeIdentity`
+ - `MGLCompositeStyleFunction` with an interpolation mode of
  `MGLInterpolationModeExponential`, `MGLInterpolationModeInterval` or
- `MGLInterpolationModeCategorical` interpolation mode`
+ `MGLInterpolationModeCategorical`
  */
 @property (nonatomic, null_resettable) MGLStyleValue<UIColor *> *fillColor;
 #else
@@ -117,14 +128,17 @@ MGL_EXPORT
  This property is only applied to the style if `fillPattern` is set to `nil`.
  Otherwise, it is ignored.`
  
- This property can be set to an `MGLStyleConstantValue`, an
- `MGLCameraStyleFunction` using an `MGLInterpolationModeExponential` or
- `MGLInterpolationModeInterval` interpolation mode, an `MGLSourceStyleFunction`
- using an `MGLInterpolationModeExponential`, `MGLInterpolationModeInterval`,
- `MGLInterpolationModeCategorical, or `MGLInterpolationModeIdentity`
- interpolation mode, or an `MGLCompositeStyleFunction` using an
+ This property can be set to one of the following values:
+ 
+ - `MGLStyleConstantValue`
+ - `MGLCameraStyleFunction` with an interpolation mode of
+ `MGLInterpolationModeExponential` or `MGLInterpolationModeInterval`
+ - `MGLSourceStyleFunction` with an interpolation mode of
+ `MGLInterpolationModeExponential`, `MGLInterpolationModeInterval`,
+ `MGLInterpolationModeCategorical`, or `MGLInterpolationModeIdentity`
+ - `MGLCompositeStyleFunction` with an interpolation mode of
  `MGLInterpolationModeExponential`, `MGLInterpolationModeInterval` or
- `MGLInterpolationModeCategorical` interpolation mode`
+ `MGLInterpolationModeCategorical`
  */
 @property (nonatomic, null_resettable) MGLStyleValue<NSColor *> *fillColor;
 #endif
@@ -137,14 +151,17 @@ MGL_EXPORT
  `NSNumber` object containing the float `1`. Set this property to `nil` to reset
  it to the default value.`
  
- This property can be set to an `MGLStyleConstantValue`, an
- `MGLCameraStyleFunction` using an `MGLInterpolationModeExponential` or
- `MGLInterpolationModeInterval` interpolation mode, an `MGLSourceStyleFunction`
- using an `MGLInterpolationModeExponential`, `MGLInterpolationModeInterval`,
- `MGLInterpolationModeCategorical, or `MGLInterpolationModeIdentity`
- interpolation mode, or an `MGLCompositeStyleFunction` using an
+ This property can be set to one of the following values:
+ 
+ - `MGLStyleConstantValue`
+ - `MGLCameraStyleFunction` with an interpolation mode of
+ `MGLInterpolationModeExponential` or `MGLInterpolationModeInterval`
+ - `MGLSourceStyleFunction` with an interpolation mode of
+ `MGLInterpolationModeExponential`, `MGLInterpolationModeInterval`,
+ `MGLInterpolationModeCategorical`, or `MGLInterpolationModeIdentity`
+ - `MGLCompositeStyleFunction` with an interpolation mode of
  `MGLInterpolationModeExponential`, `MGLInterpolationModeInterval` or
- `MGLInterpolationModeCategorical` interpolation mode`
+ `MGLInterpolationModeCategorical`
  */
 @property (nonatomic, null_resettable) MGLStyleValue<NSNumber *> *fillOpacity;
 
@@ -156,14 +173,17 @@ MGL_EXPORT
  and `fillAntialiased` is set to an `MGLStyleValue` object containing an
  `NSNumber` object containing `YES`. Otherwise, it is ignored.`
  
- This property can be set to an `MGLStyleConstantValue`, an
- `MGLCameraStyleFunction` using an `MGLInterpolationModeExponential` or
- `MGLInterpolationModeInterval` interpolation mode, an `MGLSourceStyleFunction`
- using an `MGLInterpolationModeExponential`, `MGLInterpolationModeInterval`,
- `MGLInterpolationModeCategorical, or `MGLInterpolationModeIdentity`
- interpolation mode, or an `MGLCompositeStyleFunction` using an
+ This property can be set to one of the following values:
+ 
+ - `MGLStyleConstantValue`
+ - `MGLCameraStyleFunction` with an interpolation mode of
+ `MGLInterpolationModeExponential` or `MGLInterpolationModeInterval`
+ - `MGLSourceStyleFunction` with an interpolation mode of
+ `MGLInterpolationModeExponential`, `MGLInterpolationModeInterval`,
+ `MGLInterpolationModeCategorical`, or `MGLInterpolationModeIdentity`
+ - `MGLCompositeStyleFunction` with an interpolation mode of
  `MGLInterpolationModeExponential`, `MGLInterpolationModeInterval` or
- `MGLInterpolationModeCategorical` interpolation mode`
+ `MGLInterpolationModeCategorical`
  */
 @property (nonatomic, null_resettable) MGLStyleValue<UIColor *> *fillOutlineColor;
 #else
@@ -174,14 +194,17 @@ MGL_EXPORT
  and `fillAntialiased` is set to an `MGLStyleValue` object containing an
  `NSNumber` object containing `YES`. Otherwise, it is ignored.`
  
- This property can be set to an `MGLStyleConstantValue`, an
- `MGLCameraStyleFunction` using an `MGLInterpolationModeExponential` or
- `MGLInterpolationModeInterval` interpolation mode, an `MGLSourceStyleFunction`
- using an `MGLInterpolationModeExponential`, `MGLInterpolationModeInterval`,
- `MGLInterpolationModeCategorical, or `MGLInterpolationModeIdentity`
- interpolation mode, or an `MGLCompositeStyleFunction` using an
+ This property can be set to one of the following values:
+ 
+ - `MGLStyleConstantValue`
+ - `MGLCameraStyleFunction` with an interpolation mode of
+ `MGLInterpolationModeExponential` or `MGLInterpolationModeInterval`
+ - `MGLSourceStyleFunction` with an interpolation mode of
+ `MGLInterpolationModeExponential`, `MGLInterpolationModeInterval`,
+ `MGLInterpolationModeCategorical`, or `MGLInterpolationModeIdentity`
+ - `MGLCompositeStyleFunction` with an interpolation mode of
  `MGLInterpolationModeExponential`, `MGLInterpolationModeInterval` or
- `MGLInterpolationModeCategorical` interpolation mode`
+ `MGLInterpolationModeCategorical`
  */
 @property (nonatomic, null_resettable) MGLStyleValue<NSColor *> *fillOutlineColor;
 #endif
@@ -190,9 +213,11 @@ MGL_EXPORT
  Name of image in sprite to use for drawing image fills. For seamless patterns,
  image width and height must be a factor of two (2, 4, 8, ..., 512).`
  
- This property can be set to an `MGLStyleConstantValue` or an
- `MGLCameraStyleFunction` using an `MGLInterpolationModeInterval` interpolation
- mode
+ This property can be set to one of the following values:
+ 
+ - `MGLStyleConstantValue`
+ - `MGLCameraStyleFunction` with an interpolation mode of
+ `MGLInterpolationModeInterval`
  */
 @property (nonatomic, null_resettable) MGLStyleValue<NSString *> *fillPattern;
 
@@ -210,9 +235,11 @@ MGL_EXPORT
  href="https://www.mapbox.com/mapbox-gl-style-spec/#paint-fill-translate"><code>fill-translate</code></a>
  layout property in the Mapbox Style Specification.`
  
- This property can be set to an `MGLStyleConstantValue` or an
- `MGLCameraStyleFunction` using an `MGLInterpolationModeExponential` or
- `MGLInterpolationModeInterval` interpolation mode
+ This property can be set to one of the following values:
+ 
+ - `MGLStyleConstantValue`
+ - `MGLCameraStyleFunction` with an interpolation mode of
+ `MGLInterpolationModeExponential` or `MGLInterpolationModeInterval`
  */
 @property (nonatomic, null_resettable) MGLStyleValue<NSValue *> *fillTranslation;
 #else
@@ -229,9 +256,11 @@ MGL_EXPORT
  href="https://www.mapbox.com/mapbox-gl-style-spec/#paint-fill-translate"><code>fill-translate</code></a>
  layout property in the Mapbox Style Specification.`
  
- This property can be set to an `MGLStyleConstantValue` or an
- `MGLCameraStyleFunction` using an `MGLInterpolationModeExponential` or
- `MGLInterpolationModeInterval` interpolation mode
+ This property can be set to one of the following values:
+ 
+ - `MGLStyleConstantValue`
+ - `MGLCameraStyleFunction` with an interpolation mode of
+ `MGLInterpolationModeExponential` or `MGLInterpolationModeInterval`
  */
 @property (nonatomic, null_resettable) MGLStyleValue<NSValue *> *fillTranslation;
 #endif
@@ -252,9 +281,11 @@ MGL_EXPORT
  href="https://www.mapbox.com/mapbox-gl-style-spec/#paint-fill-translate-anchor"><code>fill-translate-anchor</code></a>
  layout property in the Mapbox Style Specification.`
  
- This property can be set to an `MGLStyleConstantValue` or an
- `MGLCameraStyleFunction` using an `MGLInterpolationModeInterval` interpolation
- mode
+ This property can be set to one of the following values:
+ 
+ - `MGLStyleConstantValue`
+ - `MGLCameraStyleFunction` with an interpolation mode of
+ `MGLInterpolationModeInterval`
  */
 @property (nonatomic, null_resettable) MGLStyleValue<NSValue *> *fillTranslationAnchor;
 

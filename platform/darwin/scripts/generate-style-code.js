@@ -281,16 +281,17 @@ global.propertyDoc = function (propertyName, property, layerType, kind) {
             doc += `\n\nThis attribute corresponds to the <a href="https://www.mapbox.com/mapbox-gl-style-spec/#${anchor}"><code>${property.original}</code></a> layout property in the Mapbox Style Specification.`;
         }
     }
+    doc += '`\n\nThis property can be set to one of the following values:\n\n' +
+           '- `MGLStyleConstantValue`\n';
     if (property["property-function"]) {
-        doc += '`\n\nThis property can be set to an `MGLStyleConstantValue`, an `MGLCameraStyleFunction` using an `MGLInterpolationModeExponential` or `MGLInterpolationModeInterval` ' +
-               'interpolation mode, an `MGLSourceStyleFunction` using an `MGLInterpolationModeExponential`, `MGLInterpolationModeInterval`, `MGLInterpolationModeCategorical, or `MGLInterpolationModeIdentity` ' + 
-               'interpolation mode, or an `MGLCompositeStyleFunction` using an `MGLInterpolationModeExponential`, `MGLInterpolationModeInterval` or `MGLInterpolationModeCategorical` interpolation mode`.';
+        doc += '- `MGLCameraStyleFunction` with an interpolation mode of `MGLInterpolationModeExponential` or `MGLInterpolationModeInterval`\n' +
+               '- `MGLSourceStyleFunction` with an interpolation mode of `MGLInterpolationModeExponential`, `MGLInterpolationModeInterval`, `MGLInterpolationModeCategorical`, or `MGLInterpolationModeIdentity`\n' + 
+               '- `MGLCompositeStyleFunction` with an interpolation mode of `MGLInterpolationModeExponential`, `MGLInterpolationModeInterval` or `MGLInterpolationModeCategorical`\n';
     } else {
         if (property.function === "interpolated") {
-        doc += '`\n\nThis property can be set to an `MGLStyleConstantValue` or an `MGLCameraStyleFunction` using an `MGLInterpolationModeExponential` or `MGLInterpolationModeInterval` ' +
-               'interpolation mode.';
+            doc += '- `MGLCameraStyleFunction` with an interpolation mode of `MGLInterpolationModeExponential` or `MGLInterpolationModeInterval`\n';
         } else {
-            doc += '`\n\nThis property can be set to an `MGLStyleConstantValue` or an `MGLCameraStyleFunction` using an `MGLInterpolationModeInterval` interpolation mode.';
+            doc += '- `MGLCameraStyleFunction` with an interpolation mode of `MGLInterpolationModeInterval`\n';
         }
     }
     return doc;
