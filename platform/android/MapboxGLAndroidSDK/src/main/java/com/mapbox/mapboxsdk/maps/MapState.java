@@ -1,29 +1,32 @@
 package com.mapbox.mapboxsdk.maps;
 
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
-import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 
 import com.mapbox.mapboxsdk.constants.MapboxConstants;
 
-class MapState {
+class MapState extends State {
 
   private String apiBaseUrl;
   private String styleUrl;
   private boolean debug;
-  private int cycleDebugOptions;
 
-  private boolean baseUrlNeedsSync;
-  private boolean styleUrlNeedsSync;
-  private boolean debugNeedsSync;
-  private boolean cycleDebugNeedsSync;
+  MapState(@NonNull NativeMapView nativeMapView, @NonNull GLSurfaceView glSurfaceView) {
+    super(nativeMapView, glSurfaceView);
+  }
 
   @UiThread
-  void setApiBaseUrl(String apiBaseUrl) {
+  void setApiBaseUrl(@NonNull final String apiBaseUrl) {
     this.apiBaseUrl = apiBaseUrl;
-    baseUrlNeedsSync = true;
+    queueRenderEvent(new NativeMapRunnable() {
+      @Override
+      public void execute(NativeMapView nativeMapView) {
+        nativeMapView.setApiBaseUrl(apiBaseUrl);
+      }
+    });
   }
 
   @UiThread
@@ -32,9 +35,40 @@ class MapState {
   }
 
   @UiThread
-  void setStyleUrl(String styleUrl) {
+  void setStyleUrl(final String styleUrl) {
     this.styleUrl = styleUrl;
-    styleUrlNeedsSync = true;
+    queueRenderEvent(new NativeMapRunnable() {
+      @Override
+      public void execute(NativeMapView nativeMapView) {
+        nativeMapView.setStyleUrl(styleUrl);
+      }
+    });
+  }
+
+  @UiThread
+  boolean getDebug() {
+    return debug;
+  }
+
+  @UiThread
+  void setDebug(final boolean debug) {
+    this.debug = debug;
+    queueRenderEvent(new NativeMapRunnable() {
+      @Override
+      public void execute(NativeMapView nativeMapView) {
+        nativeMapView.setDebug(debug);
+      }
+    });
+  }
+
+  @UiThread
+  void cycleDebugOptions(){
+    queueRenderEvent(new NativeMapRunnable() {
+      @Override
+      public void execute(@NonNull NativeMapView nativeMapView) {
+        nativeMapView.cycleDebugOptions();
+      }
+    });
   }
 
   @UiThread
@@ -46,54 +80,19 @@ class MapState {
 
   @UiThread
   void onRestoreInstanceState(Bundle savedInstanceState) {
-    debug = savedInstanceState.getBoolean(MapboxConstants.STATE_DEBUG_ACTIVE);
+    boolean debug = savedInstanceState.getBoolean(MapboxConstants.STATE_DEBUG_ACTIVE);
     if(debug){
-      debugNeedsSync = true;
+      setDebug(debug);
     }
 
-    final String styleUrl = savedInstanceState.getString(MapboxConstants.STATE_STYLE_URL);
+    String styleUrl = savedInstanceState.getString(MapboxConstants.STATE_STYLE_URL);
     if (!TextUtils.isEmpty(styleUrl)) {
       setStyleUrl(styleUrl);
     }
 
-    final String apiBaseUrl = savedInstanceState.getString(MapboxConstants.STATE_API_BASE_URL);
+    String apiBaseUrl = savedInstanceState.getString(MapboxConstants.STATE_API_BASE_URL);
     if (!TextUtils.isEmpty(apiBaseUrl)) {
       setApiBaseUrl(apiBaseUrl);
-    }
-  }
-
-  @UiThread
-  boolean getDebug() {
-    return debug;
-  }
-
-  @UiThread
-  void cycleDebugOptions() {
-    cycleDebugOptions++;
-  }
-
-  @UiThread
-  void setDebug(boolean debug) {
-    this.debug = debug;
-  }
-
-  @WorkerThread
-  void syncState(@NonNull NativeMapView nativeMapView) {
-    if (baseUrlNeedsSync) {
-      nativeMapView.setApiBaseUrl(apiBaseUrl);
-      baseUrlNeedsSync = false;
-    } else if (styleUrlNeedsSync) {
-      nativeMapView.setStyleUrl(styleUrl);
-      styleUrlNeedsSync = false;
-    } else if (debugNeedsSync) {
-      nativeMapView.setDebug(debug);
-      debugNeedsSync = false;
-    } else if (cycleDebugNeedsSync) {
-      for (int i = 0; i < cycleDebugOptions; i++) {
-        nativeMapView.cycleDebugOptions();
-      }
-      cycleDebugNeedsSync = false;
-      cycleDebugOptions = 0;
     }
   }
 }

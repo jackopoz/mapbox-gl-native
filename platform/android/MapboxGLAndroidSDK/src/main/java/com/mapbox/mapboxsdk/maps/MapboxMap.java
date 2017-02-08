@@ -2,6 +2,7 @@ package com.mapbox.mapboxsdk.maps;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Camera;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.location.Location;
@@ -60,7 +61,7 @@ import timber.log.Timber;
 public final class MapboxMap {
 
   private final NativeMapView nativeMapView;
-  private final MapState mapState = new MapState();
+  private final MapState mapState;
 
   private final UiSettings uiSettings;
   private final TrackingSettings trackingSettings;
@@ -70,13 +71,13 @@ public final class MapboxMap {
   private final MyLocationViewSettings myLocationViewSettings;
 
   private final OnRegisterTouchListener onRegisterTouchListener;
-
   private MapboxMap.OnFpsChangedListener onFpsChangedListener;
 
-  MapboxMap(NativeMapView map, Transform transform, UiSettings ui, TrackingSettings tracking,
+  MapboxMap(NativeMapView map, MapState mapState, Transform transform, UiSettings ui, TrackingSettings tracking,
             MyLocationViewSettings myLocationView, Projection projection, OnRegisterTouchListener listener,
             AnnotationManager annotations) {
     this.nativeMapView = map;
+    this.mapState = mapState;
     this.uiSettings = ui;
     this.trackingSettings = tracking;
     this.projection = projection;
@@ -115,7 +116,6 @@ public final class MapboxMap {
     outState.putParcelable(MapboxConstants.STATE_CAMERA_POSITION, transform.getCameraPosition());
     trackingSettings.onSaveInstanceState(outState);
     uiSettings.onSaveInstanceState(outState);
-    mapState.onSaveInstanceState(outState);
   }
 
   void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -124,7 +124,6 @@ public final class MapboxMap {
       moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder(cameraPosition).build()));
     }
 
-    mapState.onRestoreInstanceState(savedInstanceState);
     uiSettings.onRestoreInstanceState(savedInstanceState);
     trackingSettings.onRestoreInstanceState(savedInstanceState);
   }
@@ -152,11 +151,13 @@ public final class MapboxMap {
    * Called when the user
    */
   void onUpdate() {
-    CameraPosition cameraPosition = transform.invalidateCameraPosition();
-    uiSettings.update(cameraPosition);
-    // FIXME introduce update method with camera position
-    trackingSettings.update();
-    annotationManager.update();
+    CameraPosition cameraPosition = transform.getCameraPosition();
+    if(cameraPosition!=null) {
+      uiSettings.update(cameraPosition);
+      // FIXME introduce update method with camera position
+      trackingSettings.update();
+      annotationManager.update();
+    }
   }
 
   // Style
@@ -460,6 +461,7 @@ public final class MapboxMap {
    *
    * @return the Projection associated with this map
    */
+  @UiThread
   public Projection getProjection() {
     return projection;
   }
@@ -474,6 +476,7 @@ public final class MapboxMap {
    * This invokes the {@link CancelableCallback} for ongoing camera updates.
    * </p>
    */
+  @UiThread
   public void cancelTransitions() {
     transform.cancelTransitions();
   }
@@ -485,6 +488,7 @@ public final class MapboxMap {
    *
    * @return The current position of the Camera.
    */
+  @UiThread
   public final CameraPosition getCameraPosition() {
     return transform.getCameraPosition();
   }
@@ -496,6 +500,7 @@ public final class MapboxMap {
    *
    * @param cameraPosition the camera position to set
    */
+  @UiThread
   public void setCameraPosition(@NonNull CameraPosition cameraPosition) {
     moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), null);
   }
@@ -716,7 +721,7 @@ public final class MapboxMap {
    * Invalidates the current camera position by reconstructing it from mbgl
    */
   void invalidateCameraPosition() {
-    CameraPosition cameraPosition = transform.invalidateCameraPosition();
+    CameraPosition cameraPosition = transform.getCameraPosition();
     if (cameraPosition != null) {
       transform.updateCameraPosition(cameraPosition);
     }
@@ -1600,14 +1605,6 @@ public final class MapboxMap {
   public List<Feature> queryRenderedFeatures(@NonNull RectF coordinates, @Nullable String...
     layerIds) {
     return nativeMapView.queryRenderedFeatures(coordinates, layerIds);
-  }
-
-  /**
-   * Synchronise user set state with
-   */
-  @WorkerThread
-  void syncState() {
-    mapState.syncState(nativeMapView);
   }
 
   //

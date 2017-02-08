@@ -49,6 +49,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -74,6 +77,7 @@ import static android.opengl.GLSurfaceView.RENDERMODE_WHEN_DIRTY;
 public class MapView extends FrameLayout {
 
   private NativeMapView nativeMapView;
+  private MapState mapState;
   private boolean destroyed;
 
   private GLSurfaceView glSurfaceView;
@@ -141,6 +145,7 @@ public class MapView extends FrameLayout {
     glSurfaceView = (GLSurfaceView) findViewById(R.id.surfaceView);
     glSurfaceView.setEGLConfigChooser(8, 8, 8, 0 /** TODO: What alpha value do we need here?? */, 16, 8);
     glSurfaceView.setEGLContextClientVersion(2);
+
     glSurfaceView.setRenderer(new GLSurfaceView.Renderer() {
       @Override
       public void onSurfaceCreated(final GL10 gl, EGLConfig eglConfig) {
@@ -172,13 +177,9 @@ public class MapView extends FrameLayout {
       @Override
       public void onDrawFrame(GL10 gl) {
         Timber.i("[%s] onDrawFrame", Thread.currentThread().getName());
-        if (mapboxMap != null) {
-          mapboxMap.syncState();
-        }
         nativeMapView.render();
       }
     });
-
   }
 
   private void setupViewProperties() {
@@ -193,20 +194,8 @@ public class MapView extends FrameLayout {
     requestDisallowInterceptTouchEvent(true);
   }
 
-//  private void loopRender() {
-//    postDelayed(new Runnable() {
-//      @Override
-//      public void run() {
-//        //glSurfaceView.queueEvent(renderRunnable);
-//        onInvalidate();
-////        nativeMapView.update();
-//        //onInvalidate();
-//        loopRender();
-//      }
-//    }, 500);
-//  }
-
   protected void onNativeMapViewReady() {
+    mapState = new MapState(nativeMapView, glSurfaceView);
 
     // callback for focal point invalidation
     FocalPointInvalidator focalPoint = new FocalPointInvalidator();
@@ -224,8 +213,8 @@ public class MapView extends FrameLayout {
     MyLocationViewSettings myLocationViewSettings = new MyLocationViewSettings(myLocationView, proj, focalPoint);
     MarkerViewManager markerViewManager = new MarkerViewManager((ViewGroup) findViewById(R.id.markerViewContainer));
     AnnotationManager annotations = new AnnotationManager(nativeMapView, this, markerViewManager);
-    Transform transform = new Transform(nativeMapView, annotations.getMarkerViewManager(), trackingSettings);
-    mapboxMap = new MapboxMap(nativeMapView, transform, uiSettings, trackingSettings, myLocationViewSettings, proj,
+    Transform transform = new Transform(glSurfaceView, nativeMapView, annotations.getMarkerViewManager(), trackingSettings);
+    mapboxMap = new MapboxMap(nativeMapView, mapState, transform, uiSettings, trackingSettings, myLocationViewSettings, proj,
       registerTouchListener, annotations);
 
     // user input
@@ -265,6 +254,7 @@ public class MapView extends FrameLayout {
     if (savedInstanceState == null) {
       MapboxEvent.trackMapLoadEvent();
     } else if (savedInstanceState.getBoolean(MapboxConstants.STATE_HAS_SAVED_STATE)) {
+      mapState.onRestoreInstanceState(savedInstanceState);
       mapboxMap.onRestoreInstanceState(savedInstanceState);
     }
   }
@@ -279,6 +269,7 @@ public class MapView extends FrameLayout {
   @UiThread
   public void onSaveInstanceState(@NonNull Bundle outState) {
     outState.putBoolean(MapboxConstants.STATE_HAS_SAVED_STATE, true);
+    mapState.onSaveInstanceState(outState);
     mapboxMap.onSaveInstanceState(outState);
   }
 
@@ -500,30 +491,6 @@ public class MapView extends FrameLayout {
   protected void requestRender() {
     if (glSurfaceView != null) {
       glSurfaceView.requestRender();
-    }
-  }
-
-  @Override
-  public void onDraw(Canvas canvas) {
-    Timber.i("onDraw");
-    super.onDraw(canvas);
-    if (isInEditMode()) {
-      return;
-    }
-
-    //glSurfaceView.queueEvent(renderRunnable);
-  }
-
-  @Override
-  protected void onSizeChanged(int width, int height, int oldw, int oldh) {
-    if (destroyed) {
-      return;
-    }
-
-    if (!isInEditMode()) {
-      if (nativeMapView != null) {
-        //XXX This should happen through GLSurfaceView#Renderer callbacks nativeMapView.resizeView(width, height);
-      }
     }
   }
 

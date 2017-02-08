@@ -524,7 +524,7 @@ final class MapGestureDetector {
       trackingSettings.resetTrackingModesIfRequired(true, true);
 
       // Get rotate value
-      double bearing = transform.getRawBearing();
+      double bearing = transform.getBearing();
       bearing += detector.getRotationDegreesDelta();
 
       // Rotate the map
